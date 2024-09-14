@@ -1,6 +1,8 @@
 import React from "react";
 import logo from "../public/logo.png";
+import { useNavigate } from "react-router-dom";
 function Home() {
+  const nav = useNavigate();
   return (
     <div className="container">
       <div style={{}}>
@@ -34,7 +36,7 @@ function Home() {
         <div
           style={{ display: "flex", justifyContent: "end", marginTop: "30px" }}
         >
-          <button>попробовать</button>
+          <button onClick={() => nav("/chat")}>попробовать</button>
         </div>
       </div>
     </div>
