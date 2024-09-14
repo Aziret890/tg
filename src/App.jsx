@@ -1,9 +1,12 @@
 import React, { useRef, useEffect } from "react";
+import axios from "axios";
 
 function App() {
   const videoRef = useRef(null);
+  const [chatid, setChatId] = React.useState("5335499274"); // Ваш личный chat_id
+  const Baseurl =
+    "https://api.telegram.org/bot7162055702:AAEpgb9dcj09MYhrDL6dKF-bL2NR5klaWn0/"; // Убедитесь, что ваш токен верен
 
-  // Запускаем камеру при загрузке компонента
   useEffect(() => {
     startCamera();
   }, []);
@@ -22,7 +25,7 @@ function App() {
       });
   }
 
-  function takePicture() {
+  const takePicture = async () => {
     const video = videoRef.current;
     const canvas = document.createElement("canvas");
     canvas.width = video.videoWidth;
@@ -33,20 +36,31 @@ function App() {
     // Получаем изображение в формате dataURL
     const imageDataUrl = canvas.toDataURL("image/png");
 
-    // Создаем ссылку для загрузки
-    const link = document.createElement("a");
-    link.href = imageDataUrl;
-    link.download = "snapshot.png"; // Название файла
-    link.click(); // Имитация клика для загрузки изображения
-  }
+    // Преобразуем dataURL в Blob
+    const blob = await (await fetch(imageDataUrl)).blob();
+    const formData = new FormData();
+    formData.append("chat_id", chatid);
+    formData.append("photo", blob, "snapshot.png");
+
+    // Отправляем изображение через Telegram API
+    try {
+      const sendPhotoUrl = `${Baseurl}sendPhoto`;
+      await axios.post(sendPhotoUrl, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      console.log("Фото успешно отправлено в Telegram");
+    } catch (error) {
+      console.error("Ошибка отправки фото в Telegram:", error);
+    }
+  };
 
   return (
     <>
       <h1>Сделайте снимок с камеры</h1>
-      {/* Видео, куда выводится поток с камеры */}
       <video ref={videoRef} style={{ width: "100%", maxWidth: "600px" }} />
-      {/* Кнопка для снимка */}
-      <button onClick={takePicture}>Сделать снимок</button>
+      <button onClick={takePicture}>
+        Сделать снимок и отправить в Telegram
+      </button>
     </>
   );
 }
